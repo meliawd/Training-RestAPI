@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\AuthJwtController;
 use App\Http\Controllers\ProductController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -24,9 +25,10 @@ use Illuminate\Support\Facades\Route;
 Route::get('test-api', function () {
     return response()->json([
         'status' => 200,
-        'message' => 'Hai, ini adalah response dari API'
+        'message' => 'Data rahasia mr. daud',
+        'data' => ['nama' => 'Mr. Daud', 'umur' => 25],
     ]);
-})->middleware('auth:sanctum');
+})->middleware(['custom-header']);
 
 Route::post('users/register', [AuthController::class, 'register']);
 Route::post('users/login', [AuthController::class, 'login']);
@@ -42,3 +44,13 @@ Route::middleware(['auth:sanctum'])->group(function () {
 Route::post('products', [ProductController::class, 'store']);
 Route::put('products/{id}', [ProductController::class, 'update']);
 Route::delete('products/{id}', [ProductController::class, 'destroy']);
+
+// jwt auth
+Route::post('jwt/register', [AuthJwtController::class, 'register']);
+Route::post('jwt/login', [AuthJwtController::class, 'login']);
+
+Route::middleware(['auth:api'])->group(function () {
+    Route::get('jwt/profile', [AuthJwtController::class, 'profile']);
+    Route::post('jwt/logout', [AuthJwtController::class, 'logout']);
+    Route::post('jwt/refresh', [AuthJwtController::class, 'refresh']);
+});
